@@ -98,7 +98,7 @@ paths:
               required:
                 - engine
                 - model_config_id
-                - dataset_id
+                - dataset
       responses:
         '200':
           description: Calibration/simulation created successfully
