@@ -4,5 +4,6 @@
     "id": "2ea2d39f-866f-46f6-beec-972ed2136ed5",
     "filename": "dataset.csv"
   },
-  "timespan": {"start": 101, "end": 190}
+  "timespan": {"start": 101, "end": 190}, 
+  "engine": "sciml"
 }
