@@ -16,7 +16,7 @@ paths:
             schema:
               type: object
               properties:
-                engine: 
+                engine:
                   type: string
                   enum: [sciml, ciemss]
                   example: sciml
@@ -65,7 +65,7 @@ paths:
             schema:
               type: object
               properties:
-                engine: 
+                engine:
                   type: string
                   enum: [sciml, ciemss]
                   example: sciml
@@ -75,7 +75,7 @@ paths:
                 dataset:
                   type: object
                   properties:
-                    id: 
+                    id:
                       type: string
                       example: "cd339570-047d-11ee-be55"
                     filename:
@@ -122,10 +122,9 @@ paths:
             schema:
               type: object
               properties:
-                engine: 
+                engine:
                   type: string
-                  enum: [sciml, ciemss]
-                  example: sciml              
+                  enum: [sciml, ciemss]           
                 model_configs:
                   type: array
                   items:
@@ -248,10 +247,10 @@ paths:
                       example: 90
                 extra:
                   description: optional extra system specific arguments for advanced use cases
-                  type: object                   
+                  type: object
               required:
                 - engine
-                - model_config_id
+                - model_config_ids
                 - timespan
       responses:
         '200':
