@@ -34,6 +34,20 @@ paths:
                       example: 90
                   items:
                     type: integer
+                interventions:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      timestep:
+                        type: number
+                        example: 2
+                      name:
+                        type: string
+                        example: "beta"
+                      value:
+                        type: number
+                        example: 0.4                    
                 extra:
                   description: optional extra system specific arguments for advanced use cases
                   type: object
