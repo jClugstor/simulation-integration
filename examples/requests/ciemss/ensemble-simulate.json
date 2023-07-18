@@ -1,36 +1,22 @@
 {
-  "engine": "sciml",
+  "engine": "ciemss",
   "model_configs": [
     {
-      "id": "ba8da8d4-047d-11ee-be56",
-      "observables": {
-        "S": "Susceptible",
-        "I": "SymptomaticAndAsymptomatic",
-        "R": "Healthy"
-      }
+      "id": "50541388-9f0f-4399-8cc1-fd978858a53f",
+      "weight": 0.5,
+      "solution_mappings": {"Infected": "Cases", "Hospitalizations": "hospitalized_population"}
     },
     {
-      "id": "c1cd941a-047d-11ee-be56",
-      "observables": {
-        "S": "S",
-        "I": "IandDandAandRandT",
-        "R": "HandE"
-      }
-    },
-    {
-      "id": "c4b9f88a-047d-11ee-be56",
-      "observables": {
-        "S": "scaleS",
-        "I": "scaleI",
-        "R": "scaleR"
-      }
+      "id": "6678bcfd-e832-4862-b9d2-fc7b5c96a576",
+      "weight": 0.5,
+      "solution_mappings": {"Infected": "Infections", "Hospitalizations": "hospitalized_population"}
     }
   ],
   "timespan": {
     "start": 0,
-    "end": 90
+    "end": 5
   },
-  "extras": {
+  "extra": {
     "num_samples": 100
   }
 }
