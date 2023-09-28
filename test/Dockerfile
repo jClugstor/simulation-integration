@@ -5,4 +5,6 @@ RUN pip install --no-cache-dir poetry==1.5.1 pytest
 
 COPY . /tests
 
+WORKDIR /tests
+
 CMD [ "/tests/run_tests.sh" ]
