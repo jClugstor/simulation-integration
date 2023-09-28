@@ -16,7 +16,7 @@ services:
       SQL_PORT: 5432
       SQL_USER: dev
       SQL_PASSWORD: dev
-      NEO4J_ENABLED:
+      NEO4J_ENABLED: true
       NEO4J_driver: neo4j://neo4j:7687
       AWS_ACCESS_KEY_ID: miniouser
       AWS_SECRET_ACCESS_KEY: miniopass
@@ -106,7 +106,7 @@ services:
       - SQL_USER=dev
       - SQL_PASSWORD=dev
       - SQL_DB=askem
-      - NEO4J_ENABLED=
+      - NEO4J_ENABLED=true
       - NEO4J_driver=neo4j://neo4j:7687
       - AWS_ACCESS_KEY_ID=miniouser
       - AWS_SECRET_ACCESS_KEY=miniopass
@@ -149,6 +149,11 @@ services:
     depends_on:
       data-service:
         condition: service_started
+    healthcheck:
+      test: curl http://localhost:8000/ || exit 1
+      interval: 10s
+      timeout: 20s
+      retries: 30
   pyciemss-worker:
     image: ghcr.io/darpa-askem/pyciemss-worker:latest
     environment:
@@ -176,3 +181,18 @@ services:
     depends_on:
       data-service:
         condition: service_started
+    healthcheck:
+      test: curl http://localhost:8080/ || exit 1
+      interval: 10s
+      timeout: 20s
+      retries: 30
+  tests:
+    build:
+      context: test/
+    depends_on:
+      pyciemss-api:
+        condition: service_healthy
+      pyciemss-worker:
+        condition: service_started
+      simulation-service:
+        condition: service_healthy
