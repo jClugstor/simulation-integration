@@ -5,10 +5,10 @@ from time import sleep, time
 import boto3
 import requests
 
-TDS_URL = os.environ("TDS_URL", "data-service")
-PYCIEMSS_URL = os.environ("PYCIEMSS_URL", "pyciemss-api")
-SCIML_URL = os.environ("SCIML_URL", "sciml-service")
-BUCKET = os.environ("BUCKET", "jataware-sim-service-test")
+TDS_URL = os.environ.get("TDS_URL", "data-service")
+PYCIEMSS_URL = os.environ.get("PYCIEMSS_URL", "pyciemss-api")
+SCIML_URL = os.environ.get("SCIML_URL", "sciml-service")
+BUCKET = os.environ.get("BUCKET", "jataware-sim-service-test")
 
 
 def eval_integration(service_name, endpoint, request):
@@ -22,7 +22,7 @@ def eval_integration(service_name, endpoint, request):
         while (status := get_status()) in ["queued", "running"]:
             sleep(5)
             status = get_status()
-        if status == "complete"
+        if status == "complete":
             is_success = True
 
 
@@ -63,7 +63,7 @@ def publish_report(report, upload):
 
 def report(upload=True):
     publish_report(gen_report())
-    
+
 
 if __name__ == "__main__":
     report()
