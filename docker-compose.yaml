@@ -188,7 +188,8 @@ services:
       retries: 30
   tests:
     build:
-      context: test/
+      context: .
+      dockerfile: tests/Dockerfile
     depends_on:
       pyciemss-api:
         condition: service_healthy
