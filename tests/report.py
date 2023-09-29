@@ -5,10 +5,10 @@ from time import sleep, time
 import boto3
 import requests
 
-TDS_URL = os.environ.get("TDS_URL", "data-service")
-PYCIEMSS_URL = os.environ.get("PYCIEMSS_URL", "pyciemss-api")
-SCIML_URL = os.environ.get("SCIML_URL", "sciml-service")
-BUCKET = os.environ.get("BUCKET", "jataware-sim-service-test")
+TDS_URL = os.environ.get("TDS_URL", "http://data-service")
+PYCIEMSS_URL = os.environ.get("PYCIEMSS_URL", "http://pyciemss-api")
+SCIML_URL = os.environ.get("SCIML_URL", "http://sciml-service")
+BUCKET = os.environ.get("BUCKET", None)
 
 
 def eval_integration(service_name, endpoint, request):
@@ -19,13 +19,10 @@ def eval_integration(service_name, endpoint, request):
     if kickoff_request.status_code < 300:
         sim_id = kickoff_request.json()["simulation_id"]
         get_status = lambda: request.get(f"{base_url}/{endpoint}/status/{sim_id}").json()["status"]
-        while (status := get_status()) in ["queued", "running"]:
-            sleep(5)
-            status = get_status()
-        if status == "complete":
+        while get_status() in ["queued", "running"]:
+            sleep(1)
+        if get_status() == "complete"
             is_success = True
-
-
     return {
         "Integration Status": is_success,
         "Execution Time": time() - start_time
@@ -33,7 +30,25 @@ def eval_integration(service_name, endpoint, request):
 
 
 def gen_report():
-    report = {"scenarios": {}, "services": {}}
+    report = {
+        "scenarios": {
+            "PyCIEMSS": {},
+            "SciML": {}
+        }, 
+        "services": {
+            "TDS": {
+                "version": "UNAVAILABLE"
+            },
+            "PyCIEMSS Service": {
+                "version": "UNAVAILABLE"
+            },
+            "SciML Service": {
+                "version": "UNAVAILABLE"
+            },
+        }
+    }
+
+    
     report["scenarios"] = {name: {} for name in os.listdir("scenarios")}
     for scenario in scenarios:
         scenario_spec = {
@@ -66,4 +81,4 @@ def report(upload=True):
 
 
 if __name__ == "__main__":
-    report()
+    report(BUCKET is not None)
