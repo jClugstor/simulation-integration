@@ -92,8 +92,8 @@ services:
       timeout: 20s
       retries: 5
   data-service-migrations:
-    image: ghcr.io/darpa-askem/data-service-migrations:latest
-    entrypoint: /run_migrations.sh
+    image: ghcr.io/darpa-askem/data-service:latest
+    command: ['/api/migrations/run_migrations.sh']
     environment:
       - DATASET_STORAGE_BASE_URL=s3://datasets/
       - STORAGE_HOST=http://minio:9000
