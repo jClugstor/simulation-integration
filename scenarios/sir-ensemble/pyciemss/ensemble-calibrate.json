@@ -4,16 +4,16 @@
     {
       "id": "sirhd",
       "weight": 0.5,
-      "solution_mappings": {"Infected": "Cases", "Hospitalizations": "hospitalized_population"}
+      "solution_mappings": {"Infected": "Infections", "Hospitalizations": "hospitalized_population"}
     },
     {
       "id": "seiarhds",
       "weight": 0.5,
-      "solution_mappings": {"Infected": "Infections", "Hospitalizations": "hospitalized_population"}
+      "solution_mappings": {"Infected": "Cases", "Hospitalizations": "hospitalized_population"}
     }
   ],
   "dataset": {
-    "id": "cc52e71f-c744-4883-9412-0858d8455754",
+    "id": "ensemble",
     "filename": "ensemble.csv"
   },
   "timespan": {
