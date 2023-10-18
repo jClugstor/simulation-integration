@@ -4,6 +4,7 @@ import logging
 from time import sleep, time
 from datetime import datetime
 from collections import defaultdict
+from urllib.parse import urljoin
 
 import boto3
 import requests
@@ -41,6 +42,13 @@ def eval_integration(service_name, endpoint, request):
 
 
 def gen_report():
+    def get_version(base_url):
+        response = requests.get(urljoin(base_url, "health"))        
+        if response.status_code < 300:
+            return response.json()["git_sha"]
+        else:
+            return f"UNAVAILABLE: {response.status_code}"
+
     report = {
         "scenarios": {
             "pyciemss": defaultdict(dict),
@@ -48,13 +56,13 @@ def gen_report():
         },
         "services": {
             "TDS": {
-                "version": "UNAVAILABLE"
+                "version": get_version(TDS_URL)
             },
             "PyCIEMSS Service": {
-                "version": "UNAVAILABLE"
+                "version": get_version(PYCIEMSS_URL)
             },
             "SciML Service": {
-                "version": "UNAVAILABLE"
+                "version": get_version(SCIML_URL)
             },
         }
     }
