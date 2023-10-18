@@ -32,9 +32,9 @@ jobs:
           sudo rm -rf /usr/local/lib/R
 
       - name: Log in to Github Package
-        run: echo $GH_TOKEN | docker login ghcr.io -u fivegrant --password-stdin
+        run: echo $GH_TOKEN | docker login ghcr.io -u jatautomoton --password-stdin
         env:
-          GH_TOKEN: ${{secrets.GH_TOKEN}}
+          GH_TOKEN: ${{secrets.GHP_ACCESS_TOKEN}}
 
       - name: Pull images
         run: docker compose pull
