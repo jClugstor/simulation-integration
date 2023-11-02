@@ -4,7 +4,7 @@ standing up all of the relevant TA3 services with a Docker Compose
 and trying to use a few requests through the relevant parts of the stack.
 
 ## Usage
-Run `docker compose run --build tests`. Once the `tests` container completes, the report is done.
+Run `docker compose pull`  followed by: `docker compose run tests`. Once the `tests` container completes, the report is done.
 
 If run with UPLOAD=TRUE as an environment variable, the report will be uploaded to S3.
 Otherwise, the report is output as part of the `tests` container's logs.
