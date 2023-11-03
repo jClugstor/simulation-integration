@@ -5,7 +5,7 @@ and trying to use a few requests through the relevant parts of the stack.
 
 ## Usage
 
-1. First you must have a github personal access token (classic) that grants scope access to
+1. First you must have a [github personal access token (classic)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) that grants scope access to
    - [x] .`workflow`,
    - [x] `read:packages`,
    - [x] `write:packages`
