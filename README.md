@@ -5,11 +5,15 @@ and trying to use a few requests through the relevant parts of the stack.
 
 ## Usage
 
-1. First you must have a github personal access token (classic) that grants scope access to  `workflow`, `read:packages`, `write:packages` and `delete:packages`.
-2. Then in the `simulation-integration` directory, execute: `echo [YOUR_GITHUB_TOKEN] | docker login ghcr.io -u USERNAME --password-stdin`
-3. Then run `docker compose pull`
-4. followed by: `docker compose build`
-5. followed by `docker compose run tests`.
+1. First you must have a github personal access token (classic) that grants scope access to
+   - [x] .`workflow`,
+   - [x] `read:packages`,
+   - [x] `write:packages`
+   - [x] and `delete:packages`.
+3. Then in the `simulation-integration` directory, execute: `echo [YOUR_GITHUB_TOKEN] | docker login ghcr.io -u USERNAME --password-stdin`
+4. Then run `docker compose pull`
+5. followed by: `docker compose build`
+6. followed by `docker compose run tests`.
    
 Once the `tests` container completes, the report is done.
 
