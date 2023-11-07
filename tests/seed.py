@@ -1,51 +1,95 @@
 from glob import glob
 import json
 import os
+import datetime
+import logging
 
 import requests
 
 TDS_URL = os.environ.get("TDS_URL", "http://data-service:8000")
 
-model_configs = glob("./data/models/*.json")
-for config_path in model_configs:
-    config = json.load(open(config_path, 'rb'))
-    model = config["configuration"]
-    model_response = requests.post(TDS_URL + "/models", json=model, headers={
-        "Content-Type": "application/json"
-    })
-    if model_response.status_code >= 300:
-        raise Exception(f"Failed to POST model ({model_response.status_code}): {config['id']}")
-    config["model_id"] = model_response.json()["id"]
-    config_response = requests.post(TDS_URL + "/model_configurations", json=config,
-        headers= {
-            "Content-Type": "application/json"
-        }    
-    )
+def create_project():
+    '''
+    Generate test project in TDS
+    '''
+    current_timestamp = datetime.now()
+    ts = current_timestamp.strftime('%Y-%m-%d %H:%M:%S')
 
-    
-    if config_response.status_code >= 300:
-        raise Exception(f"Failed to POST config ({config_response.status_code}): {config['id']}")
-
-datasets = glob("./data/datasets/*.csv")
-for filepath in datasets:
-    filename = filepath.split("/")[-1]
-    dataset_name = filename.split(".")[0]
-    dataset = {
-        "id": dataset_name,
-        "name": dataset_name,
-        "file_names": [
-            filename
-        ]
-    }
-    dataset_response = requests.post(TDS_URL + "/datasets", json=dataset,
-        headers= {
-            "Content-Type": "application/json"
+    project = {
+        "name": "Integration Test Suite Project",
+        "description": f"Test generated at {ts}",
+        "assets": [],
+        "active": True,
         }    
-    )
-    if dataset_response.status_code >= 300:
-        raise Exception(f"Failed to POSt dataset ({dataset_response.status_code}): {dataset['name']}")
-    url_response = requests.get(TDS_URL + f"/datasets/{dataset_name}/upload-url", params={"filename": filename})
-    upload_url = url_response.json()["url"]
-    with open(filepath, "rb") as file:
-        requests.put(upload_url, file)
+
+    resp = requests.post(f"{TDS_URL}/projects", json=project)
+    project_id = resp.json()['id']
+
+    return project_id
+
+def add_asset(resource_id, resource_type, project_id):
+    resp = requests.post(f"{TDS_URL}/projects/{project_id}/assets/{resource_type}/{resource_id}")
+    return resp.json()
+
+
+if __name__ == "__main__":
+
+     # Get project ID from environment
+    project_id = os.environ.get("PROJECT_ID")
+    if project_id:
+        logging.info(f"Project ID found in environment: {project_id}")
+        proj_resp = requests.get(f"{TDS_URL}/projects/{project_id}")
+        if proj_resp.status_code == 404:
+            raise Exception(f"Project ID {project_id} does not exist in TDS at {TDS_URL}")
+    # if it does not exist, create it 
+    else:
+        project_id = create_project()
+        logging.info(f"No project ID found in environment. Created project with ID: {project_id}")
+
+    model_configs = glob("./data/models/*.json")
+    for config_path in model_configs:
+        config = json.load(open(config_path, 'rb'))
+        model = config["configuration"]
+        model_response = requests.post(TDS_URL + "/models", json=model, headers={
+            "Content-Type": "application/json"
+        })
+        if model_response.status_code >= 300:
+            raise Exception(f"Failed to POST model ({model_response.status_code}): {config['id']}")
+        else:
+            add_asset(model_response.json()["id"], "models", project_id)
+        config["model_id"] = model_response.json()["id"]
+        config_response = requests.post(TDS_URL + "/model_configurations", json=config,
+            headers= {
+                "Content-Type": "application/json"
+            }    
+        )
+
         
+        if config_response.status_code >= 300:
+            raise Exception(f"Failed to POST config ({config_response.status_code}): {config['id']}")
+
+    datasets = glob("./data/datasets/*.csv")
+    for filepath in datasets:
+        filename = filepath.split("/")[-1]
+        dataset_name = filename.split(".")[0]
+        dataset = {
+            "id": dataset_name,
+            "name": dataset_name,
+            "file_names": [
+                filename
+            ]
+        }
+        dataset_response = requests.post(TDS_URL + "/datasets", json=dataset,
+            headers= {
+                "Content-Type": "application/json"
+            }    
+        )
+        if dataset_response.status_code >= 300:
+            raise Exception(f"Failed to POSt dataset ({dataset_response.status_code}): {dataset['name']}")
+        else:
+            add_asset(dataset_response.json()["id"], "datasets", project_id)
+        url_response = requests.get(TDS_URL + f"/datasets/{dataset_name}/upload-url", params={"filename": filename})
+        upload_url = url_response.json()["url"]
+        with open(filepath, "rb") as file:
+            requests.put(upload_url, file)
+            
