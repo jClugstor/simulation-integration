@@ -9,6 +9,8 @@ from urllib.parse import urljoin
 import boto3
 import requests
 
+from utils import add_asset
+
 logging.basicConfig()
 logging.getLogger().setLevel(logging.INFO)
 
@@ -19,15 +21,6 @@ BUCKET = os.environ.get("BUCKET", None)
 UPLOAD = os.environ.get("UPLOAD", "FALSE").lower() == "true"
 
 PROJECT_ID = os.environ.get("PROJECT_ID", None)
-
-def add_asset(resource_id, resource_type, project_id):
-    logging.info(f"Adding asset {resource_id} of type {resource_type} to project {project_id}")
-    if project_id is None:
-        logging.info("No project ID found in environment. Looking for project_id.txt")
-        with open('project_id.txt', 'r') as f:
-            project_id = f.read()
-    resp = requests.post(f"{TDS_URL}/projects/{project_id}/assets/{resource_type}/{resource_id}")
-    return resp.json()
 
 
 def eval_integration(service_name, endpoint, request):

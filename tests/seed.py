@@ -1,43 +1,25 @@
 from glob import glob
 import json
 import os
-from datetime import datetime
 import logging
 
 import requests
 
+from utils import create_project, add_asset
+
+logging.basicConfig()
+logging.getLogger().setLevel(logging.INFO)
+
 TDS_URL = os.environ.get("TDS_URL", "http://data-service:8000")
-
-def create_project():
-    '''
-    Generate test project in TDS
-    '''
-    current_timestamp = datetime.now()
-    ts = current_timestamp.strftime('%Y-%m-%d %H:%M:%S')
-
-    project = {
-        "name": "Integration Test Suite Project",
-        "description": f"Test generated at {ts}",
-        "assets": [],
-        "active": True,
-        }    
-
-    resp = requests.post(f"{TDS_URL}/projects", json=project)
-    project_id = resp.json()['id']
-
-    return project_id
-
-def add_asset(resource_id, resource_type, project_id):
-    resp = requests.post(f"{TDS_URL}/projects/{project_id}/assets/{resource_type}/{resource_id}")
-    return resp.json()
 
 
 if __name__ == "__main__":
 
      # Get project ID from environment
     project_id = os.environ.get("PROJECT_ID")
+
     if project_id:
-        logging.info(f"Project ID found in environment: {project_id}")
+        logging.info(f"Found project ID in environment: {project_id}")
         proj_resp = requests.get(f"{TDS_URL}/projects/{project_id}")
         if proj_resp.status_code == 404:
             raise Exception(f"Project ID {project_id} does not exist in TDS at {TDS_URL}")
