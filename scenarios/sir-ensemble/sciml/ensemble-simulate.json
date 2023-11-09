@@ -1,0 +1,22 @@
+{
+  "engine": "sciml",
+  "model_configs": [
+    {
+      "id": "sirhd",
+      "weight": 0.5,
+      "solution_mappings": {"Infected": "Infections", "Hospitalizations": "hospitalized_population"}
+    },
+    {
+      "id": "seiarhds",
+      "weight": 0.5,
+      "solution_mappings": {"Infected": "Cases", "Hospitalizations": "hospitalized_population"}
+    }
+  ],
+  "timespan": {
+    "start": 0,
+    "end": 5
+  },
+  "extra": {
+    "num_samples": 100
+  }
+}
