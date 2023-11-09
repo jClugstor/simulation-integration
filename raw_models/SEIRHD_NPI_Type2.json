@@ -1,9 +1,9 @@
 {
  "header": {
-  "name": "SEIRHD_with_reinfection01",
+  "name": "SEIRHD model NPI Type 2",
   "schema": "https://raw.githubusercontent.com/DARPA-ASKEM/Model-Representations/petrinet_v0.6/petrinet/petrinet_schema.json",
   "schema_name": "petrinet",
-  "description": "SEIRHD_with_reinfection01",
+  "description": "SEIRHD model NPI Type 2",
   "model_version": "0.1"
  },
  "properties": {},
@@ -170,18 +170,6 @@
     "properties": {
      "name": "t6"
     }
-   },
-   {
-    "id": "t7",
-    "input": [
-     "R"
-    ],
-    "output": [
-     "S"
-    ],
-    "properties": {
-     "name": "t7"
-    }
    }
   ]
  },
@@ -190,8 +178,8 @@
    "rates": [
     {
      "target": "t1",
-     "expression": "I*S*beta/total_population",
-     "expression_mathml": "<apply><divide/><apply><times/><ci>I</ci><ci>S</ci><ci>beta</ci></apply><ci>total_population</ci></apply>"
+     "expression": "I*S*kappa*(beta_nc + (beta_c - beta_nc)/(1 + exp(-k1*(-t + t1))) + (-beta_c + beta_s)/(1 + exp(-k*(-t + t0))))/total_population",
+     "expression_mathml": "<apply><divide/><apply><times/><ci>I</ci><ci>S</ci><ci>kappa</ci><apply><plus/><ci>beta_nc</ci><apply><divide/><apply><plus/><apply><minus/><ci>beta_c</ci></apply><ci>beta_s</ci></apply><apply><plus/><cn>1</cn><apply><exp/><apply><minus/><apply><times/><ci>k</ci><apply><minus/><ci>t0</ci><ci>t</ci></apply></apply></apply></apply></apply></apply><apply><divide/><apply><minus/><ci>beta_c</ci><ci>beta_nc</ci></apply><apply><plus/><cn>1</cn><apply><exp/><apply><minus/><apply><times/><ci>k1</ci><apply><minus/><ci>t1</ci><ci>t</ci></apply></apply></apply></apply></apply></apply></apply></apply><ci>total_population</ci></apply>"
     },
     {
      "target": "t2",
@@ -217,11 +205,6 @@
      "target": "t6",
      "expression": "H*death_hosp/los",
      "expression_mathml": "<apply><divide/><apply><times/><ci>H</ci><ci>death_hosp</ci></apply><ci>los</ci></apply>"
-    },
-    {
-     "target": "t7",
-     "expression": "R*roil",
-     "expression_mathml": "<apply><times/><ci>R</ci><ci>roil</ci></apply>"
     }
    ],
    "initials": [
@@ -258,7 +241,61 @@
    ],
    "parameters": [
     {
-     "id": "beta",
+     "id": "beta_c",
+     "value": 0.4,
+     "distribution": {
+      "type": "Uniform1",
+      "parameters": {
+       "minimum": 0.1,
+       "maximum": 0.8
+      }
+     },
+     "units": {
+      "expression": "1/day",
+      "expression_mathml": "<apply><power/><ci>day</ci><cn>-1</cn></apply>"
+     }
+    },
+    {
+     "id": "beta_nc",
+     "value": 0.4,
+     "distribution": {
+      "type": "Uniform1",
+      "parameters": {
+       "minimum": 0.1,
+       "maximum": 0.8
+      }
+     },
+     "units": {
+      "expression": "1/day",
+      "expression_mathml": "<apply><power/><ci>day</ci><cn>-1</cn></apply>"
+     }
+    },
+    {
+     "id": "beta_s",
+     "value": 1.0,
+     "units": {
+      "expression": "1/day",
+      "expression_mathml": "<apply><power/><ci>day</ci><cn>-1</cn></apply>"
+     }
+    },
+    {
+     "id": "k",
+     "value": 5.0,
+     "units": {
+      "expression": "1",
+      "expression_mathml": "<cn>1</cn>"
+     }
+    },
+    {
+     "id": "k1",
+     "value": 5.0,
+     "units": {
+      "expression": "1",
+      "expression_mathml": "<cn>1</cn>"
+     }
+    },
+    {
+     "id": "kappa",
      "value": 0.4,
      "distribution": {
       "type": "Uniform1",
@@ -270,6 +307,22 @@
      "units": {
       "expression": "1/day",
       "expression_mathml": "<apply><power/><ci>day</ci><cn>-1</cn></apply>"
+     }
+    },
+    {
+     "id": "t0",
+     "value": 89.0,
+     "units": {
+      "expression": "day",
+      "expression_mathml": "<ci>day</ci>"
+     }
+    },
+    {
+     "id": "t1",
+     "value": 120.0,
+     "units": {
+      "expression": "day",
+      "expression_mathml": "<ci>day</ci>"
      }
     },
     {
@@ -339,14 +392,6 @@
      "units": {
       "expression": "day",
       "expression_mathml": "<ci>day</ci>"
-     }
-    },
-    {
-     "id": "roil",
-     "value": 0.0027397260273972603,
-     "units": {
-      "expression": "1/day",
-      "expression_mathml": "<apply><power/><ci>day</ci><cn>-1</cn></apply>"
      }
     }
    ],

@@ -1,9 +1,9 @@
 {
  "header": {
-  "name": "SEIRHD_with_reinfection01",
+  "name": "SEIRHD model with time-varying beta, beta may take on up to three values: beta1, beta2, beta3",
   "schema": "https://raw.githubusercontent.com/DARPA-ASKEM/Model-Representations/petrinet_v0.6/petrinet/petrinet_schema.json",
   "schema_name": "petrinet",
-  "description": "SEIRHD_with_reinfection01",
+  "description": "SEIRHD model with time-varying beta, beta may take on up to three values: beta1, beta2, beta3",
   "model_version": "0.1"
  },
  "properties": {},
@@ -170,18 +170,6 @@
     "properties": {
      "name": "t6"
     }
-   },
-   {
-    "id": "t7",
-    "input": [
-     "R"
-    ],
-    "output": [
-     "S"
-    ],
-    "properties": {
-     "name": "t7"
-    }
    }
   ]
  },
@@ -190,8 +178,8 @@
    "rates": [
     {
      "target": "t1",
-     "expression": "I*S*beta/total_population",
-     "expression_mathml": "<apply><divide/><apply><times/><ci>I</ci><ci>S</ci><ci>beta</ci></apply><ci>total_population</ci></apply>"
+     "expression": "I*S*(beta1/(1 + exp(-k*(-t + t0))) + beta2*(1/(1 + exp(-k*(-t + t1))) - 1/(1 + exp(-k*(-t + t0)))) + beta3*(1 - 1/(1 + exp(-k*(-t + t1)))))/total_population",
+     "expression_mathml": "<apply><divide/><apply><times/><ci>I</ci><ci>S</ci><apply><plus/><apply><divide/><ci>beta1</ci><apply><plus/><cn>1</cn><apply><exp/><apply><minus/><apply><times/><ci>k</ci><apply><minus/><ci>t0</ci><ci>t</ci></apply></apply></apply></apply></apply></apply><apply><times/><ci>beta2</ci><apply><minus/><apply><power/><apply><plus/><cn>1</cn><apply><exp/><apply><minus/><apply><times/><ci>k</ci><apply><minus/><ci>t1</ci><ci>t</ci></apply></apply></apply></apply></apply><cn>-1</cn></apply><apply><power/><apply><plus/><cn>1</cn><apply><exp/><apply><minus/><apply><times/><ci>k</ci><apply><minus/><ci>t0</ci><ci>t</ci></apply></apply></apply></apply></apply><cn>-1</cn></apply></apply></apply><apply><times/><ci>beta3</ci><apply><minus/><cn>1</cn><apply><power/><apply><plus/><cn>1</cn><apply><exp/><apply><minus/><apply><times/><ci>k</ci><apply><minus/><ci>t1</ci><ci>t</ci></apply></apply></apply></apply></apply><cn>-1</cn></apply></apply></apply></apply></apply><ci>total_population</ci></apply>"
     },
     {
      "target": "t2",
@@ -217,11 +205,6 @@
      "target": "t6",
      "expression": "H*death_hosp/los",
      "expression_mathml": "<apply><divide/><apply><times/><ci>H</ci><ci>death_hosp</ci></apply><ci>los</ci></apply>"
-    },
-    {
-     "target": "t7",
-     "expression": "R*roil",
-     "expression_mathml": "<apply><times/><ci>R</ci><ci>roil</ci></apply>"
     }
    ],
    "initials": [
@@ -258,18 +241,72 @@
    ],
    "parameters": [
     {
-     "id": "beta",
+     "id": "beta1",
      "value": 0.4,
      "distribution": {
       "type": "Uniform1",
       "parameters": {
-       "minimum": 0.05,
+       "minimum": 0.1,
        "maximum": 0.8
       }
      },
      "units": {
       "expression": "1/day",
       "expression_mathml": "<apply><power/><ci>day</ci><cn>-1</cn></apply>"
+     }
+    },
+    {
+     "id": "beta2",
+     "value": 0.4,
+     "distribution": {
+      "type": "Uniform1",
+      "parameters": {
+       "minimum": 0.1,
+       "maximum": 0.8
+      }
+     },
+     "units": {
+      "expression": "1/day",
+      "expression_mathml": "<apply><power/><ci>day</ci><cn>-1</cn></apply>"
+     }
+    },
+    {
+     "id": "beta3",
+     "value": 0.4,
+     "distribution": {
+      "type": "Uniform1",
+      "parameters": {
+       "minimum": 0.1,
+       "maximum": 0.8
+      }
+     },
+     "units": {
+      "expression": "1/day",
+      "expression_mathml": "<apply><power/><ci>day</ci><cn>-1</cn></apply>"
+     }
+    },
+    {
+     "id": "k",
+     "value": 5.0,
+     "units": {
+      "expression": "1",
+      "expression_mathml": "<cn>1</cn>"
+     }
+    },
+    {
+     "id": "t0",
+     "value": 80.0,
+     "units": {
+      "expression": "day",
+      "expression_mathml": "<ci>day</ci>"
+     }
+    },
+    {
+     "id": "t1",
+     "value": 120.0,
+     "units": {
+      "expression": "day",
+      "expression_mathml": "<ci>day</ci>"
      }
     },
     {
@@ -339,14 +376,6 @@
      "units": {
       "expression": "day",
       "expression_mathml": "<ci>day</ci>"
-     }
-    },
-    {
-     "id": "roil",
-     "value": 0.0027397260273972603,
-     "units": {
-      "expression": "1/day",
-      "expression_mathml": "<apply><power/><ci>day</ci><cn>-1</cn></apply>"
      }
     }
    ],
