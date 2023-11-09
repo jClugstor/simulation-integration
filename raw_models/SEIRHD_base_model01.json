@@ -1,9 +1,9 @@
 {
  "header": {
-  "name": "SEIRHD_with_reinfection01",
+  "name": "SEIRHD_base_model01",
   "schema": "https://raw.githubusercontent.com/DARPA-ASKEM/Model-Representations/petrinet_v0.6/petrinet/petrinet_schema.json",
   "schema_name": "petrinet",
-  "description": "SEIRHD_with_reinfection01",
+  "description": "SEIRHD_base_model01",
   "model_version": "0.1"
  },
  "properties": {},
@@ -170,18 +170,6 @@
     "properties": {
      "name": "t6"
     }
-   },
-   {
-    "id": "t7",
-    "input": [
-     "R"
-    ],
-    "output": [
-     "S"
-    ],
-    "properties": {
-     "name": "t7"
-    }
    }
   ]
  },
@@ -217,11 +205,6 @@
      "target": "t6",
      "expression": "H*death_hosp/los",
      "expression_mathml": "<apply><divide/><apply><times/><ci>H</ci><ci>death_hosp</ci></apply><ci>los</ci></apply>"
-    },
-    {
-     "target": "t7",
-     "expression": "R*roil",
-     "expression_mathml": "<apply><times/><ci>R</ci><ci>roil</ci></apply>"
     }
    ],
    "initials": [
@@ -339,14 +322,6 @@
      "units": {
       "expression": "day",
       "expression_mathml": "<ci>day</ci>"
-     }
-    },
-    {
-     "id": "roil",
-     "value": 0.0027397260273972603,
-     "units": {
-      "expression": "1/day",
-      "expression_mathml": "<apply><power/><ci>day</ci><cn>-1</cn></apply>"
      }
     }
    ],
