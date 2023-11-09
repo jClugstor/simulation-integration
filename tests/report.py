@@ -18,6 +18,17 @@ SCIML_URL = os.environ.get("SCIML_URL", "http://sciml-service:8080")
 BUCKET = os.environ.get("BUCKET", None)
 UPLOAD = os.environ.get("UPLOAD", "FALSE").lower() == "true"
 
+PROJECT_ID = os.environ.get("PROJECT_ID", None)
+
+def add_asset(resource_id, resource_type, project_id):
+    logging.info(f"Adding asset {resource_id} of type {resource_type} to project {project_id}")
+    if project_id is None:
+        logging.info("No project ID found in environment. Looking for project_id.txt")
+        with open('project_id.txt', 'r') as f:
+            project_id = f.read()
+    resp = requests.post(f"{TDS_URL}/projects/{project_id}/assets/{resource_type}/{resource_id}")
+    return resp.json()
+
 
 def eval_integration(service_name, endpoint, request):
     start_time = time()
@@ -35,6 +46,9 @@ def eval_integration(service_name, endpoint, request):
             sleep(1)
         if get_status() == "complete":
             is_success = True
+            # Add artifacts from simulations to TDS depending on what test is being run:
+            # 1) Simulation in TDS, files in MinIO
+            add_asset(sim_id, "simulations", PROJECT_ID)
     return {
         "Integration Status": is_success,
         "Execution Time": time() - start_time
@@ -110,6 +124,36 @@ def publish_report(report, upload):
 
 def report(upload=True):
     publish_report(gen_report(), upload)
+
+
+def create_workflow():
+
+
+    dataset_for_workflow = {
+        "id": "ae708813-022c-4a95-ac78-acdbe702831f",
+        "workflowId": "24ebe1ea-9e7e-4e61-8e3b-8ceb81ac4a35",
+        "operationType": "Dataset",
+        "x": 68.51835806152295,
+        "y": -77.93119400878899,
+        "state": {
+          "datasetId": "7e51ab7f-5a28-457f-bf48-597e3b811c9e"
+        },
+        "inputs": [],
+        "outputs": [
+          {
+            "id": "6a460692-45ad-4784-8ff5-d319c75cb944",
+            "type": "datasetId",
+            "label": "us",
+            "value": [
+              "7e51ab7f-5a28-457f-bf48-597e3b811c9e"
+            ],
+            "status": "not connected"
+          }
+        ],
+        "statusCode": "invalid",
+        "width": 180,
+        "height": 220
+      }
 
 
 if __name__ == "__main__":

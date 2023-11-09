@@ -1,7 +1,7 @@
 from glob import glob
 import json
 import os
-import datetime
+from datetime import datetime
 import logging
 
 import requests
@@ -46,6 +46,9 @@ if __name__ == "__main__":
         project_id = create_project()
         logging.info(f"No project ID found in environment. Created project with ID: {project_id}")
 
+    with open('project_id.txt', 'w') as f:
+        f.write(f"{project_id}")
+
     model_configs = glob("./data/models/*.json")
     for config_path in model_configs:
         config = json.load(open(config_path, 'rb'))
@@ -88,6 +91,7 @@ if __name__ == "__main__":
             raise Exception(f"Failed to POSt dataset ({dataset_response.status_code}): {dataset['name']}")
         else:
             add_asset(dataset_response.json()["id"], "datasets", project_id)
+
         url_response = requests.get(TDS_URL + f"/datasets/{dataset_name}/upload-url", params={"filename": filename})
         upload_url = url_response.json()["url"]
         with open(filepath, "rb") as file:
