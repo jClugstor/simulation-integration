@@ -4,7 +4,9 @@ standing up all of the relevant TA3 services with a Docker Compose
 and trying to use a few requests through the relevant parts of the stack.
 
 ## Usage
-Run `docker compose run --build tests`. Once the `tests` container completes, the report is done.
+First you must have a github personal access token (classic) that grants scope access to  `workflow`, `read:packages`, `write:packages` and `delete:packages`.
+Then in the `simulation-integration` directory, execute: `echo [YOUR_GITHUB_TOKEN] | docker login ghcr.io -u USERNAME --password-stdin`
+Then run `docker compose pull`  followed by: `docker compose run tests`. Once the `tests` container completes, the report is done.
 
 If run with UPLOAD=TRUE as an environment variable, the report will be uploaded to S3.
 Otherwise, the report is output as part of the `tests` container's logs.
