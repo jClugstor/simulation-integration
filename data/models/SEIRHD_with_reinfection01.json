@@ -5,7 +5,7 @@
      "schema_name": "petrinet",
      "description": "SEIRHD_with_reinfection01",
      "model_version": "0.1",
-     "properties": {},
+     "properties": {}
  },
  "model": {
   "states": [

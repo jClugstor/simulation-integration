@@ -5,7 +5,7 @@
      "schema_name": "petrinet",
      "description": "        This model has been stratified into four age groups: (0) for 0-19, (1) for 20-49, (2) for 50-64, and (3) for 65+\n        ",
      "model_version": "0.1",
-     "properties": {},
+     "properties": {}
  },
  "model": {
   "states": [

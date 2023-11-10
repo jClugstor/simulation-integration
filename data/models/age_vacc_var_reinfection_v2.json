@@ -5,7 +5,7 @@
      "schema_name": "petrinet",
      "description": "This model has been stratified by age (4 ways), variant (3 ways), and vaccine status (2 ways).",
      "model_version": "0.1",
-     "properties": {},
+     "properties": {}
  },
  "model": {
   "states": [
