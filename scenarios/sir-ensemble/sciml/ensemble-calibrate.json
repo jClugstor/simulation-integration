@@ -1,0 +1,28 @@
+{
+  "engine": "sciml",
+  "model_configs": [
+    {
+      "id": "sirhd",
+      "weight": 0.5,
+      "solution_mappings": {"Infected": "Infections", "Hospitalizations": "hospitalized_population"}
+    },
+    {
+      "id": "seiarhds",
+      "weight": 0.5,
+      "solution_mappings": {"Infected": "Cases", "Hospitalizations": "hospitalized_population"}
+    }
+  ],
+  "dataset": {
+    "id": "ensemble",
+    "filename": "ensemble.csv"
+  },
+  "timespan": {
+    "start": 0,
+    "end": 5
+  },
+  "extra": {
+    "num_samples": 200,
+    "total_population": 1000,
+    "num_iterations": 8
+  }
+}
