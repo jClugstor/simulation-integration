@@ -194,7 +194,9 @@ def generate_simulate_ciemms_module(workflow_id, config_id, simulation_output):
     return module_payload, module_uuid, config_uuid
 
 
-def generate_calibrate_ensemble_ciemss_module(workflow_id, config_ids, dataset_id):
+def generate_calibrate_ensemble_ciemss_module(
+    workflow_id, config_ids, dataset_id, simulation_output
+):
     module_uuid = str(uuid.uuid4())
 
     config_uuid = str(uuid.uuid4())
@@ -236,7 +238,155 @@ def generate_calibrate_ensemble_ciemss_module(workflow_id, config_ids, dataset_i
                 "id": sim_output_uuid,
                 "type": "number",
                 "label": "Output 1",
+                "value": [{"runId": simulation_output}],
+                "status": "not connected",
+            }
+        ],
+        "statusCode": "invalid",
+        "width": 420,
+        "height": 220,
+    }
+
+    return module_payload, module_uuid, config_uuid, dataset_uuid
+
+
+def generate_simulate_ensemble_ciemms_module(workflow_id, config_ids):
+    module_uuid = str(uuid.uuid4())
+
+    config_uuid = str(uuid.uuid4())
+    sim_output_uuid = str(uuid.uuid4())
+
+    module_payload = {
+        "id": module_uuid,
+        "workflowId": workflow_id,
+        "operationType": "SimulateEnsembleCiemms",
+        "displayName": "Simulate ensemble (probabilistic)",
+        "x": 1100,
+        "y": 200,
+        "state": {
+            "chartConfigs": [],
+            "mapping": [{"modelVariable": "", "datasetVariable": ""}],
+            "simulationsInProgress": [],
+            "extra": {"numSamples": 50, "totalPopulation": 1000, "numIterations": 10},
+        },
+        "inputs": [
+            {
+                "id": config_uuid,
+                "type": "modelConfigId",
+                "label": "Model configuration",
+                "status": "connected",
+                "value": config_ids,
+                "acceptMultiple": True,
+            }
+        ],
+        "outputs": [
+            {
+                "id": sim_output_uuid,
+                "type": "number",
+                "label": "Output 1",
                 "value": [{"runId": "123"}],
+                "status": "not connected",
+            }
+        ],
+        "statusCode": "invalid",
+        "width": 420,
+        "height": 220,
+    }
+
+    return module_payload, module_uuid, config_uuid
+
+
+# "Simulate (deterministic)"
+def generate_simulate_sciml_module(workflow_id, model_id, simulation_output):
+    module_uuid = str(uuid.uuid4())
+
+    config_uuid = str(uuid.uuid4())
+    sim_output_uuid = str(uuid.uuid4())
+
+    module_payload = {
+        "id": module_uuid,
+        "workflowId": workflow_id,
+        "operationType": "SimulateJuliaOperation",
+        "displayName": "Simulate (deterministic)",
+        "x": 1100,
+        "y": 200,
+        "state": {
+            "currentTimespan": {"end": 100, "start": 1},
+            "simConfigs": {"chartConfigs": [], "runConfigs": {}},
+            "simulationsInProgress": [],
+        },
+        "inputs": [
+            {
+                "id": config_uuid,
+                "type": "modelConfigId",
+                "label": "Model configuration",
+                "status": "connected",
+                "value": [model_id],
+                "acceptMultiple": False,
+            }
+        ],
+        "outputs": [
+            {
+                "id": sim_output_uuid,
+                "type": "simOutput",
+                "label": "Output 1",
+                "value": [simulation_output],
+                "status": "not connected",
+            }
+        ],
+        "status": "invalid",
+        "width": 420,
+        "height": 220,
+    }
+
+    return module_payload, module_uuid, config_uuid
+
+
+# "Calibrate (deterministic)"
+def generate_calibrate_sciml_module(
+    workflow_id, model_id, dataset_id, simulation_output
+):
+    module_uuid = str(uuid.uuid4())
+
+    config_uuid = str(uuid.uuid4())
+    dataset_uuid = str(uuid.uuid4())
+    sim_output_uuid = str(uuid.uuid4())
+
+    module_payload = {
+        "id": module_uuid,
+        "workflowId": workflow_id,
+        "operationType": "CalibrationOperationJulia",
+        "displayName": "Calibrate (deterministic)",
+        "x": 1100,
+        "y": 200,
+        "state": {
+            "chartConfigs": [],
+            "mapping": [{"modelVariable": "", "datasetVariable": ""}],
+            "simulationsInProgress": [],
+        },
+        "inputs": [
+            {
+                "id": config_uuid,
+                "type": "modelConfigId",
+                "label": "Model configuration",
+                "status": "connected",
+                "value": [model_id],
+                "acceptMultiple": False,
+            },
+            {
+                "id": dataset_uuid,
+                "type": "datasetId",
+                "label": "Dataset",
+                "status": "connected",
+                "value": [dataset_id],
+            },
+        ],
+        "outputs": [
+            {
+                "id": sim_output_uuid,
+                "type": "number",
+                "label": "Output 1",
+                "value": [simulation_output],
                 "status": "not connected",
             }
         ],
@@ -294,6 +444,19 @@ def workflow_builder(
 
         workflow_payload["nodes"].append(model_payload)
 
+    if config_ids:
+        config_uuids = []
+        for id in config_ids:
+            (
+                model_payload,
+                model_module_uuid,
+                config_output_uuid,
+                default_config_output_uuid,
+            ) = generate_model_module(model_id, workflow_id, id)
+
+            workflow_payload["nodes"].append(model_payload)
+            config_uuids.append(config_output_uuid)
+
     if dataset_id:
         (
             dataset_payload,
@@ -304,7 +467,7 @@ def workflow_builder(
         workflow_payload["nodes"].append(dataset_payload)
 
     match simulation_type:
-        case "calibrate_pyciemms":
+        case "calibrate_pyciemss":
             (
                 calibrate_simulate_payload,
                 calibrate_simulation_uuid,
@@ -366,14 +529,15 @@ def workflow_builder(
             )
             workflow_payload["nodes"].append(calibrate_ensemble_payload)
 
-            model_simulate_edge, model_simulate_edge_uuid = generate_edge(
-                workflow_id,
-                model_module_uuid,
-                calibrate_ensemble_uuid,
-                config_output_uuid,
-                config_input_uuid,
-            )
-            workflow_payload["edges"].append(model_simulate_edge)
+            for id in config_uuids:
+                model_simulate_edge, model_simulate_edge_uuid = generate_edge(
+                    workflow_id,
+                    id,
+                    calibrate_ensemble_uuid,
+                    config_output_uuid,
+                    config_input_uuid,
+                )
+                workflow_payload["edges"].append(model_simulate_edge)
 
             dataset_simulate_edge, dataset_simulate_edge_uuid = generate_edge(
                 workflow_id,
@@ -383,5 +547,44 @@ def workflow_builder(
                 dataset_input_uuid,
             )
             workflow_payload["edges"].append(dataset_simulate_edge)
+
+            return workflow_payload
+        case "ensemble-simulate_pyciemss":
+            (
+                simulate_ensemble_payload,
+                simulate_ensemble_uuid,
+                config_input_uuid,
+            ) = generate_simulate_ensemble_ciemms_module(
+                workflow_id, config_ids=config_ids
+            )
+            workflow_payload["nodes"].append(simulate_ensemble_payload)
+
+            for id in config_uuids:
+                model_simulate_edge, model_simulate_edge_uuid = generate_edge(
+                    workflow_id,
+                    id,
+                    simulate_ensemble_uuid,
+                    config_output_uuid,
+                    config_input_uuid,
+                )
+                workflow_payload["edges"].append(model_simulate_edge)
+
+            return workflow_payload
+        case "simulate_sciml":
+            (
+                simulate_sciml_payload,
+                simulate_sciml_uuid,
+                config_input_uuid,
+            ) = generate_simulate_sciml_module(workflow_id, model_id, simulation_output)
+            workflow_payload["nodes"].append(simulate_sciml_payload)
+
+            model_simulate_edge, model_simulate_edge_uuid = generate_edge(
+                workflow_id,
+                model_module_uuid,
+                simulate_sciml_uuid,
+                config_output_uuid,
+                config_input_uuid,
+            )
+            workflow_payload["edges"].append(model_simulate_edge)
 
             return workflow_payload

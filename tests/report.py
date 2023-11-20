@@ -107,7 +107,7 @@ def gen_report():
                     # ADD OUTPUT ID FOR SIMULATION
                     simulation_type = test + "_" + service_name
                     workflow = workflow_builder(
-                        name=f"Integration_workflow_{test}",
+                        workflow_name=f"Integration_workflow_{test}",
                         workflow_description=f"Workflow for simulation integration {test}",
                         simulation_type=simulation_type,
                         model_id=model_id,
