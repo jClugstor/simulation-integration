@@ -57,6 +57,23 @@ def eval_integration(service_name, endpoint, request):
     }, sim_id
 
 
+def add_workflow(workflow_payload):
+    workflow_response = requests.post(
+        TDS_URL + "/workflows",
+        json=workflow_payload,
+        headers={"Content-Type": "application/json"},
+    )
+    if workflow_response.status_code >= 300:
+        raise Exception(f"Failed to POSt dataset ({workflow_response.status_code})")
+    else:
+        if PROJECT_ID:
+            project_id = PROJECT_ID
+        else:
+            with open("project_id.txt", "r") as f:
+                project_id = f.read()
+        add_asset(workflow_response.json()["id"], "workflows", project_id)
+
+
 def gen_report():
     def get_version(base_url):
         response = requests.get(urljoin(base_url, "health"))
@@ -122,6 +139,8 @@ def gen_report():
                     )
                     # add_asset(workflow["id"], "workflows", PROJECT_ID)
                     logging.info(f"Workflow created: {workflow}")
+                    add_workflow(workflow_payload=workflow)
+
                 except Exception as e:
                     logging.error(f"Workflow creation failed: {e}")
                 logging.info(f"Completed `/{test}` ({service_name}, {scenario})")
