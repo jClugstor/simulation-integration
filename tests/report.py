@@ -92,15 +92,20 @@ def gen_report():
                 try:
                     model_id = None
                     config_ids = None
+                    logging.info("Trying to get model config ID here:")
+                    logging.info(file_json.get("model_config_id"))
+
                     if file_json.get("model_config_id", None):
                         model_id = file_json.get("model_config_id")
                     else:
+                        logging.info("Getting config ids")
+                        logging.info(file_json.get("model_configs"))
                         config_ids = [
                             config.get("id")
                             for config in file_json.get("model_configs")
                         ]
 
-                    if file_json.get("dataset", None).get("id", None):
+                    if file_json.get("dataset", None):
                         dataset_id = file_json.get("dataset").get("id")
                     else:
                         dataset_id = None

@@ -525,7 +525,10 @@ def workflow_builder(
                 config_input_uuid,
                 dataset_input_uuid,
             ) = generate_calibrate_ensemble_ciemss_module(
-                workflow_id, config_ids=config_ids, dataset_id=dataset_id
+                workflow_id,
+                config_ids=config_ids,
+                dataset_id=dataset_id,
+                simulation_output=simulation_output,
             )
             workflow_payload["nodes"].append(calibrate_ensemble_payload)
 
