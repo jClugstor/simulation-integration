@@ -64,7 +64,7 @@ def add_workflow(workflow_payload):
         headers={"Content-Type": "application/json"},
     )
     if workflow_response.status_code >= 300:
-        raise Exception(f"Failed to POSt dataset ({workflow_response.status_code})")
+        raise Exception(f"Failed to post workflow ({workflow_response.status_code})")
     else:
         if PROJECT_ID:
             project_id = PROJECT_ID

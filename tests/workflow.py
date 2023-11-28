@@ -31,7 +31,7 @@ def generate_model_module(model_id, workflow_id, model_config_id=None):
         "displayName": "Model",
         "x": 400,
         "y": 150,
-        "state": {"modelId": model_id, "modelConfigurationIds": []},
+        "state": {"modelId": model_id, "modelConfigurationIds": [model_config_id]},
         "inputs": [],
         "outputs": [
             {
@@ -452,7 +452,7 @@ def workflow_builder(
                 model_module_uuid,
                 config_output_uuid,
                 default_config_output_uuid,
-            ) = generate_model_module(model_id, workflow_id, id)
+            ) = generate_model_module(id, workflow_id, id)
 
             workflow_payload["nodes"].append(model_payload)
             config_uuids.append(config_output_uuid)
