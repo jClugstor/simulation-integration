@@ -106,7 +106,10 @@ def gen_report():
                 file_json = json.load(file)
                 eval_report, sim_id = eval_integration(service_name, test, file_json)
                 report["scenarios"][service_name][scenario][test] = eval_report
+
+                # Start workflow creation
                 try:
+                    # Setting up variables for workflow creation
                     model_id = None
                     config_ids = None
                     logging.info("Trying to get model config ID here:")
@@ -126,8 +129,11 @@ def gen_report():
                         dataset_id = file_json.get("dataset").get("id")
                     else:
                         dataset_id = None
-                    # ADD OUTPUT ID FOR SIMULATION
                     simulation_type = test + "_" + service_name
+                    timespan = file_json.get("timespan", None)
+                    extra = file_json.get("extra", None)
+
+                    # Create workflow
                     workflow = workflow_builder(
                         workflow_name=f"Integration_workflow_{test}",
                         workflow_description=f"Workflow for simulation integration {test}",
@@ -136,9 +142,11 @@ def gen_report():
                         simulation_output=sim_id,
                         dataset_id=dataset_id,
                         config_ids=config_ids,
+                        timespan=timespan,
+                        extra=extra,
                     )
-                    # add_asset(workflow["id"], "workflows", PROJECT_ID)
                     logging.info(f"Workflow created: {workflow}")
+                    # Post created workflow to TDS and add to project
                     add_workflow(workflow_payload=workflow)
 
                 except Exception as e:

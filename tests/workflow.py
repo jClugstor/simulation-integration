@@ -94,7 +94,7 @@ def generate_dataset_module(dataset_id, workflow_id):
 
 
 def generate_calibrate_simulate_ciemms_module(
-    workflow_id, config_id, dataset_id, simulation_output
+    workflow_id, config_id, dataset_id, simulation_output, timespan, extra
 ):
     module_uuid = str(uuid.uuid4())
 
@@ -113,6 +113,8 @@ def generate_calibrate_simulate_ciemms_module(
             "chartConfigs": [],
             "mapping": [{"modelVariable": "", "datasetVariable": ""}],
             "simulationsInProgress": [],
+            "timeSpan": timespan,
+            "extra": extra,
         },
         "inputs": [
             {
@@ -147,7 +149,9 @@ def generate_calibrate_simulate_ciemms_module(
     return module_payload, module_uuid, config_uuid, dataset_uuid
 
 
-def generate_simulate_ciemms_module(workflow_id, config_id, simulation_output):
+def generate_simulate_ciemms_module(
+    workflow_id, config_id, simulation_output, timespan, extra
+):
     module_uuid = str(uuid.uuid4())
 
     config_uuid = str(uuid.uuid4())
@@ -162,7 +166,7 @@ def generate_simulate_ciemms_module(workflow_id, config_id, simulation_output):
         "y": 200,
         "state": {
             "simConfigs": {"runConfigs": {}, "chartConfigs": []},
-            "currentTimespan": {"start": 1, "end": 100},
+            "currentTimespan": timespan,
             "numSamples": 100,
             "method": "dopri5",
             "simulationsInProgress": [],
@@ -195,7 +199,7 @@ def generate_simulate_ciemms_module(workflow_id, config_id, simulation_output):
 
 
 def generate_calibrate_ensemble_ciemss_module(
-    workflow_id, config_ids, dataset_id, simulation_output
+    workflow_id, config_ids, dataset_id, simulation_output, timespan, extra
 ):
     module_uuid = str(uuid.uuid4())
 
@@ -214,7 +218,8 @@ def generate_calibrate_ensemble_ciemss_module(
             "chartConfigs": [],
             "mapping": [{"modelVariable": "", "datasetVariable": ""}],
             "simulationsInProgress": [],
-            "extra": {"numSamples": 50, "totalPopulation": 1000, "numIterations": 10},
+            "timeSpan": timespan,
+            "extra": extra,
         },
         "inputs": [
             {
@@ -250,7 +255,7 @@ def generate_calibrate_ensemble_ciemss_module(
     return module_payload, module_uuid, config_uuid, dataset_uuid
 
 
-def generate_simulate_ensemble_ciemms_module(workflow_id, config_ids):
+def generate_simulate_ensemble_ciemms_module(workflow_id, config_ids, timespan, extra):
     module_uuid = str(uuid.uuid4())
 
     config_uuid = str(uuid.uuid4())
@@ -267,7 +272,8 @@ def generate_simulate_ensemble_ciemms_module(workflow_id, config_ids):
             "chartConfigs": [],
             "mapping": [{"modelVariable": "", "datasetVariable": ""}],
             "simulationsInProgress": [],
-            "extra": {"numSamples": 50, "totalPopulation": 1000, "numIterations": 10},
+            "timeSpan": timespan,
+            "extra": extra,
         },
         "inputs": [
             {
@@ -297,7 +303,9 @@ def generate_simulate_ensemble_ciemms_module(workflow_id, config_ids):
 
 
 # "Simulate (deterministic)"
-def generate_simulate_sciml_module(workflow_id, model_id, simulation_output):
+def generate_simulate_sciml_module(
+    workflow_id, model_id, simulation_output, timespan, extra
+):
     module_uuid = str(uuid.uuid4())
 
     config_uuid = str(uuid.uuid4())
@@ -311,9 +319,10 @@ def generate_simulate_sciml_module(workflow_id, model_id, simulation_output):
         "x": 1100,
         "y": 200,
         "state": {
-            "currentTimespan": {"end": 100, "start": 1},
+            "currentTimespan": timespan,
             "simConfigs": {"chartConfigs": [], "runConfigs": {}},
             "simulationsInProgress": [],
+            "extra": extra,
         },
         "inputs": [
             {
@@ -344,7 +353,7 @@ def generate_simulate_sciml_module(workflow_id, model_id, simulation_output):
 
 # "Calibrate (deterministic)"
 def generate_calibrate_sciml_module(
-    workflow_id, model_id, dataset_id, simulation_output
+    workflow_id, model_id, dataset_id, simulation_output, timespan, extra
 ):
     module_uuid = str(uuid.uuid4())
 
@@ -363,6 +372,8 @@ def generate_calibrate_sciml_module(
             "chartConfigs": [],
             "mapping": [{"modelVariable": "", "datasetVariable": ""}],
             "simulationsInProgress": [],
+            "timeSpan": timespan,
+            "extra": extra,
         },
         "inputs": [
             {
@@ -429,6 +440,8 @@ def workflow_builder(
     simulation_output,
     dataset_id=None,
     config_ids=[],  # for ensemble
+    timespan=None,
+    extra=None,
 ):
     workflow_payload, workflow_id = generate_workflow(
         workflow_name, workflow_description
@@ -474,7 +487,7 @@ def workflow_builder(
                 config_input_uuid,
                 dataset_input_uuid,
             ) = generate_calibrate_simulate_ciemms_module(
-                workflow_id, model_id, dataset_id, simulation_output
+                workflow_id, model_id, dataset_id, simulation_output, timespan, extra
             )
             workflow_payload["nodes"].append(calibrate_simulate_payload)
 
@@ -504,7 +517,7 @@ def workflow_builder(
                 simulate_ciemss_uuid,
                 config_input_uuid,
             ) = generate_simulate_ciemms_module(
-                workflow_id, model_id, simulation_output
+                workflow_id, model_id, simulation_output, timespan, extra
             )
             workflow_payload["nodes"].append(simulate_ciemss_payload)
 
@@ -529,6 +542,8 @@ def workflow_builder(
                 config_ids=config_ids,
                 dataset_id=dataset_id,
                 simulation_output=simulation_output,
+                timespan=timespan,
+                extra=extra,
             )
             workflow_payload["nodes"].append(calibrate_ensemble_payload)
 
@@ -558,7 +573,7 @@ def workflow_builder(
                 simulate_ensemble_uuid,
                 config_input_uuid,
             ) = generate_simulate_ensemble_ciemms_module(
-                workflow_id, config_ids=config_ids
+                workflow_id, config_ids=config_ids, timespan=timespan, extra=extra
             )
             workflow_payload["nodes"].append(simulate_ensemble_payload)
 
@@ -578,7 +593,9 @@ def workflow_builder(
                 simulate_sciml_payload,
                 simulate_sciml_uuid,
                 config_input_uuid,
-            ) = generate_simulate_sciml_module(workflow_id, model_id, simulation_output)
+            ) = generate_simulate_sciml_module(
+                workflow_id, model_id, simulation_output, timespan, extra
+            )
             workflow_payload["nodes"].append(simulate_sciml_payload)
 
             model_simulate_edge, model_simulate_edge_uuid = generate_edge(
