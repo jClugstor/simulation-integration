@@ -7,7 +7,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest #-4-cores
-
+    environment: "report-runner"
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
