@@ -1,12 +1,13 @@
 {
+ "id": "SEIRD-base-model01-petrinet",
  "header": {
-    "name": "SEIRHD_with_reinfection01",
-    "schema": "https://raw.githubusercontent.com/DARPA-ASKEM/Model-Representations/petrinet_v0.5/petrinet/petrinet_schema.json",
-    "schema_name": "petrinet",
-    "description": "SEIRHD_with_reinfection01",
-    "model_version": "0.1",
-    "properties": {}
+  "name": "SEIRD_base_model01",
+  "schema": "https://raw.githubusercontent.com/DARPA-ASKEM/Model-Representations/petrinet_v0.6/petrinet/petrinet_schema.json",
+  "schema_name": "petrinet",
+  "description": "SEIRD_base_model01",
+  "model_version": "0.1"
  },
+ "properties": {},
  "model": {
   "states": [
    {
@@ -59,22 +60,6 @@
       "ido": "0000592"
      },
      "modifiers": {}
-    },
-    "units": {
-     "expression": "person",
-     "expression_mathml": "<ci>person</ci>"
-    }
-   },
-   {
-    "id": "H",
-    "name": "H",
-    "grounding": {
-     "identifiers": {
-      "ido": "0000511"
-     },
-     "modifiers": {
-      "property": "ncit:C25179"
-     }
     },
     "units": {
      "expression": "person",
@@ -141,46 +126,10 @@
      "I"
     ],
     "output": [
-     "H"
-    ],
-    "properties": {
-     "name": "t4"
-    }
-   },
-   {
-    "id": "t5",
-    "input": [
-     "H"
-    ],
-    "output": [
-     "R"
-    ],
-    "properties": {
-     "name": "t5"
-    }
-   },
-   {
-    "id": "t6",
-    "input": [
-     "H"
-    ],
-    "output": [
      "D"
     ],
     "properties": {
-     "name": "t6"
-    }
-   },
-   {
-    "id": "t7",
-    "input": [
-     "R"
-    ],
-    "output": [
-     "S"
-    ],
-    "properties": {
-     "name": "t7"
+     "name": "t4"
     }
    }
   ]
@@ -200,40 +149,25 @@
     },
     {
      "target": "t3",
-     "expression": "I*gamma*(1 - hosp)",
-     "expression_mathml": "<apply><times/><ci>I</ci><ci>gamma</ci><apply><minus/><cn>1</cn><ci>hosp</ci></apply></apply>"
+     "expression": "I*gamma*(1 - death)",
+     "expression_mathml": "<apply><times/><ci>I</ci><ci>gamma</ci><apply><minus/><cn>1</cn><ci>death</ci></apply></apply>"
     },
     {
      "target": "t4",
-     "expression": "I*gamma*hosp",
-     "expression_mathml": "<apply><times/><ci>I</ci><ci>gamma</ci><ci>hosp</ci></apply>"
-    },
-    {
-     "target": "t5",
-     "expression": "H*(1 - death_hosp)/los",
-     "expression_mathml": "<apply><divide/><apply><times/><ci>H</ci><apply><minus/><cn>1</cn><ci>death_hosp</ci></apply></apply><ci>los</ci></apply>"
-    },
-    {
-     "target": "t6",
-     "expression": "H*death_hosp/los",
-     "expression_mathml": "<apply><divide/><apply><times/><ci>H</ci><ci>death_hosp</ci></apply><ci>los</ci></apply>"
-    },
-    {
-     "target": "t7",
-     "expression": "R*roil",
-     "expression_mathml": "<apply><times/><ci>R</ci><ci>roil</ci></apply>"
+     "expression": "I*death*gamma",
+     "expression_mathml": "<apply><times/><ci>I</ci><ci>death</ci><ci>gamma</ci></apply>"
     }
    ],
    "initials": [
     {
      "target": "S",
-     "expression": "19339950.0000000",
-     "expression_mathml": "<cn>19339950.0</cn>"
+     "expression": "total_population - I0",
+     "expression_mathml": "<apply><minus/><ci>total_population</ci><ci>I0</ci></apply>"
     },
     {
      "target": "I",
-     "expression": "10.0000000000000",
-     "expression_mathml": "<cn>10.0</cn>"
+     "expression": "I0",
+     "expression_mathml": "<cn>I0</cn>"
     },
     {
      "target": "E",
@@ -242,11 +176,6 @@
     },
     {
      "target": "R",
-     "expression": "0.0",
-     "expression_mathml": "<cn>0.0</cn>"
-    },
-    {
-     "target": "H",
      "expression": "0.0",
      "expression_mathml": "<cn>0.0</cn>"
     },
@@ -281,8 +210,38 @@
      }
     },
     {
+     "id": "I0",
+     "value": 10.0,
+     "distribution": {
+      "type": "Uniform1",
+      "parameters": {
+       "minimum": 1.0,
+       "maximum": 15.0
+      }
+     },
+     "units": {
+      "expression": "person",
+      "expression_mathml": "<ci>person</ci>"
+     }
+    },
+    {
      "id": "delta",
      "value": 0.25,
+     "units": {
+      "expression": "1/day",
+      "expression_mathml": "<apply><power/><ci>day</ci><cn>-1</cn></apply>"
+     }
+    },
+    {
+     "id": "death",
+     "value": 0.007,
+     "distribution": {
+      "type": "Uniform1",
+      "parameters": {
+       "minimum": 0.001,
+       "maximum": 0.01
+      }
+     },
      "units": {
       "expression": "1/day",
       "expression_mathml": "<apply><power/><ci>day</ci><cn>-1</cn></apply>"
@@ -302,72 +261,14 @@
       "expression": "1/day",
       "expression_mathml": "<apply><power/><ci>day</ci><cn>-1</cn></apply>"
      }
-    },
-    {
-     "id": "hosp",
-     "value": 0.1,
-     "distribution": {
-      "type": "Uniform1",
-      "parameters": {
-       "minimum": 0.005,
-       "maximum": 0.2
-      }
-     },
-     "units": {
-      "expression": "1/day",
-      "expression_mathml": "<apply><power/><ci>day</ci><cn>-1</cn></apply>"
-     }
-    },
-    {
-     "id": "death_hosp",
-     "value": 0.07,
-     "distribution": {
-      "type": "Uniform1",
-      "parameters": {
-       "minimum": 0.01,
-       "maximum": 0.1
-      }
-     },
-     "units": {
-      "expression": "1/day",
-      "expression_mathml": "<apply><power/><ci>day</ci><cn>-1</cn></apply>"
-     }
-    },
-    {
-     "id": "los",
-     "value": 5.0,
-     "units": {
-      "expression": "day",
-      "expression_mathml": "<ci>day</ci>"
-     }
-    },
-    {
-     "id": "roil",
-     "value": 0.0027397260273972603,
-     "units": {
-      "expression": "1/day",
-      "expression_mathml": "<apply><power/><ci>day</ci><cn>-1</cn></apply>"
-     }
     }
    ],
-   "observables": [    
+   "observables": [     
     {
      "id": "infected",
      "name": "infected",
      "expression": "I",
      "expression_mathml": "<ci>I</ci>"
-    },
-    {
-     "id": "exposed",
-     "name": "exposed",
-     "expression": "E",
-     "expression_mathml": "<ci>E</ci>"
-    },
-    {
-     "id": "hospitalized",
-     "name": "hospitalized",
-     "expression": "H",
-     "expression_mathml": "<ci>H</ci>"
     },
     {
      "id": "dead",

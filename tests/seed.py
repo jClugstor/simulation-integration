@@ -12,7 +12,6 @@ logging.getLogger().setLevel(logging.INFO)
 
 TDS_URL = os.environ.get("TDS_URL", "http://data-service:8000")
 
-
 if __name__ == "__main__":
     # Get project ID from environment
     project_id = os.environ.get("PROJECT_ID")
@@ -56,9 +55,20 @@ if __name__ == "__main__":
 
     model_configs = glob("./data/models/*.json")
     for config_path in model_configs:
-        config = json.load(open(config_path, "rb"))
-        model = config["configuration"]
-        model["id"] = config["id"]
+        obj = json.load(open(config_path, "rb"))
+        if "id" not in obj:
+            raise Exception("An 'id' as a property of a model/config")
+        if "configuration" in obj:
+            config = obj
+            model = config["configuration"]
+        else:
+            model = obj
+            config = {
+                "id": model["id"],
+                "name": model["header"]["name"],
+                "description": model["header"]["description"],
+                "configuration": model,
+            }
         model_response = requests.post(
             TDS_URL + "/models",
             json=model,
@@ -76,11 +86,6 @@ if __name__ == "__main__":
             json=config,
             headers={"Content-Type": "application/json"},
         )
-
-        if config_response.status_code >= 300:
-            raise Exception(
-                f"Failed to POST config ({config_response.status_code}): {config['id']}"
-            )
 
     datasets = glob("./data/datasets/*.csv")
     for filepath in datasets:
