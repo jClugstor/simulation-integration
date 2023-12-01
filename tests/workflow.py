@@ -2,7 +2,7 @@ import uuid
 
 
 def generate_workflow(workflow_name, workflow_description):
-    workflow_id = str(uuid.uuid4())
+    workflow_id = workflow_name.lower()
     workflow_payload = {
         "id": workflow_id,
         "name": workflow_name,

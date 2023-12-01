@@ -24,6 +24,26 @@ if __name__ == "__main__":
             raise Exception(
                 f"Project ID {project_id} does not exist in TDS at {TDS_URL}"
             )
+
+        # if the project exists, remove all simulations from it
+        types = ["simulations"]
+        sim_resp = requests.get(
+            f"{TDS_URL}/projects/{project_id}/assets", params={"types": types}
+        )
+        if sim_resp.status_code >= 300:
+            raise Exception(
+                f"Failed to check project for existing simulations: {sim_resp.status_code}: {sim_resp.json()}"
+            )
+        else:
+            logging.info(f"Sim response: {sim_resp.json()}")
+            for sim in sim_resp.json().get("simulations", []):
+                sim_id = sim["id"]
+                logging.info(f"Deleting {sim_id} from project {project_id}")
+                del_resp = requests.delete(
+                    f"{TDS_URL}/projects/{project_id}/assets/simulations/{sim_id}"
+                )
+                if del_resp.status_code >= 300:
+                    logging.info(f"Failed to delete simulation {sim_id}")
     # if it does not exist, create it
     else:
         project_id = create_project()

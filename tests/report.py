@@ -135,8 +135,8 @@ def gen_report():
 
                     # Create workflow
                     workflow = workflow_builder(
-                        workflow_name=f"Integration_workflow_{test}",
-                        workflow_description=f"Workflow for simulation integration {test}",
+                        workflow_name=f"integration_workflow_{simulation_type}",
+                        workflow_description=f"Workflow for simulation integration {simulation_type}",
                         simulation_type=simulation_type,
                         model_id=model_id,
                         simulation_output=sim_id,
