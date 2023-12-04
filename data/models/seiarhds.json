@@ -371,7 +371,7 @@
           "id": "Cases",
           "name": "Cases",
           "expression": "symptomatic_population + asymptomatic_population",
-          "expression_mathml": "<apply><plus/><ci><mml:msub><mml:mi>asymptomatic</mml:mi><mml:mi>population</mml:mi></mml:msub></ci><ci><mml:msub><mml:mi>symptomatic</mml:mi><mml:mi>popuation</mml:mi></mml:msub></ci></apply>"
+          "expression_mathml": "<apply><plus/><ci>symptomatic_popuation</ci><ci>asymptomatic_population</ci></apply>"
         }
       ],
       "time": {
