@@ -67,9 +67,13 @@ def add_workflow(workflow_payload):
         headers={"Content-Type": "application/json"},
     )
     if workflow_response.status_code >= 300:
-        raise Exception(f"Failed to post workflow ({workflow_response.status_code} {workflow_response.text}})")
+        raise Exception(
+            f"Failed to post workflow ({workflow_response.status_code} {workflow_response.text})"
+        )
     else:
-        logging.info(f"Workflow created/updated with ID: {workflow_response.json().get('id')}")
+        logging.info(
+            f"Workflow created/updated with ID: {workflow_response.json().get('id')}"
+        )
         if PROJECT_ID:
             project_id = PROJECT_ID
         else:
