@@ -167,7 +167,7 @@
     {
      "target": "I",
      "expression": "I0",
-     "expression_mathml": "<cn>I0</cn>"
+     "expression_mathml": "<ci>I0</ci>"
     },
     {
      "target": "E",

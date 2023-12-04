@@ -248,7 +248,7 @@
           "id": "Infections",
           "name": "Infections",
           "expression": "infectious_population",
-          "expression_mathml": "<ci>infection_population</ci>"
+          "expression_mathml": "<ci>infectious_population</ci>"
         }
       ],
       "time": {
