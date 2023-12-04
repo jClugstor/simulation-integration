@@ -44,11 +44,18 @@ def add_asset(resource_id, resource_type, project_id):
     resp = requests.post(
         f"{TDS_URL}/projects/{project_id}/assets/{resource_type}/{resource_id}"
     )
-    if resp.status_code >= 300:
+    if resp.status_code == 409:
+        logging.info(
+            f"Asset {resource_id} of type {resource_type} already exists in project {project_id}"
+        )
+        logging.info(
+            "Asset should have been updated in TDS by POST requests, no need to add it to the project again."
+        )
+        return resp.json()
+    elif resp.status_code >= 300:
         logging.error(
             f"Failed to add asset to project: status - {resp.status_code}: {resp.json()}"
         )
-
         return resp.json()
 
     provenance_payload = {

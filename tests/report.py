@@ -58,14 +58,18 @@ def eval_integration(service_name, endpoint, request):
 
 
 def add_workflow(workflow_payload):
+    if workflow_payload is None:
+        logging.info("No workflow payload provided, not making request")
+        return
     workflow_response = requests.post(
         TDS_URL + "/workflows",
         json=workflow_payload,
         headers={"Content-Type": "application/json"},
     )
     if workflow_response.status_code >= 300:
-        raise Exception(f"Failed to post workflow ({workflow_response.status_code})")
+        raise Exception(f"Failed to post workflow ({workflow_response.status_code} {workflow_response.text}})")
     else:
+        logging.info(f"Workflow created/updated with ID: {workflow_response.json().get('id')}")
         if PROJECT_ID:
             project_id = PROJECT_ID
         else:
@@ -97,8 +101,11 @@ def gen_report():
         for backend in ["pyciemss", "sciml"]:
             path = f"scenarios/{scenario}/{backend}"
             if os.path.exists(path):
-                scenario_spec[backend] = [f for f in os.listdir(f"scenarios/{scenario}/{backend}")
-                                          if f.endswith(".json")] # only grab json files (ignore hidden notebooks)
+                scenario_spec[backend] = [
+                    f
+                    for f in os.listdir(f"scenarios/{scenario}/{backend}")
+                    if f.endswith(".json")
+                ]  # only grab json files (ignore hidden notebooks)
         for service_name, tests in scenario_spec.items():
             for test_file in tests:
                 test = test_file.split(".")[0]
@@ -136,7 +143,7 @@ def gen_report():
 
                     # Create workflow
                     workflow = workflow_builder(
-                        workflow_name=f"integration_workflow_{simulation_type}",
+                        workflow_name=f"{scenario}_{simulation_type}_integration_workflow",
                         workflow_description=f"Workflow for simulation integration {simulation_type}",
                         simulation_type=simulation_type,
                         model_id=model_id,

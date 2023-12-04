@@ -655,3 +655,33 @@ def workflow_builder(
             workflow_payload["edges"].append(model_simulate_edge)
 
             return workflow_payload
+        case "calibrate_sciml":
+            (
+                calibrate_sciml_payload,
+                calibrate_sciml_uuid,
+                config_input_uuid,
+                dataset_input_uuid,
+            ) = generate_calibrate_sciml_module(
+                workflow_id, model_id, dataset_id, simulation_output, timespan, extra
+            )
+            workflow_payload["nodes"].append(calibrate_sciml_payload)
+
+            model_simulate_edge, model_simulate_edge_uuid = generate_edge(
+                workflow_id,
+                model_module_uuid,
+                calibrate_sciml_uuid,
+                config_output_uuid,
+                config_input_uuid,
+            )
+            workflow_payload["edges"].append(model_simulate_edge)
+
+            dataset_simulate_edge, dataset_simulate_edge_uuid = generate_edge(
+                workflow_id,
+                dataset_module_uuid,
+                calibrate_sciml_uuid,
+                dataset_output_uuid,
+                dataset_input_uuid,
+            )
+            workflow_payload["edges"].append(dataset_simulate_edge)
+
+            return workflow_payload
