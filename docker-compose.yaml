@@ -44,7 +44,7 @@ services:
       - 9000
       - 9001
     entrypoint: ""
-    command: ["minio", "server", "/data"]
+    command: [ "minio", "server", "/data" ]
     ports:
       - 9000
     depends_on:
@@ -73,7 +73,7 @@ services:
       - POSTGRES_USER=dev
       - POSTGRES_DB=askem
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U dev -d askem"]
+      test: [ "CMD-SHELL", "pg_isready -U dev -d askem" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -93,7 +93,7 @@ services:
       retries: 5
   data-service-migrations:
     image: ghcr.io/darpa-askem/data-service:latest
-    command: ['/api/migrations/run_migrations.sh']
+    command: [ '/api/migrations/run_migrations.sh' ]
     environment:
       - DATASET_STORAGE_BASE_URL=s3://datasets/
       - STORAGE_HOST=http://minio:9000
@@ -141,7 +141,7 @@ services:
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - TDS_URL=http://data-service:8000
+      - TDS_URL
     ports:
       - 8001:8000
     depends_on:
@@ -159,7 +159,7 @@ services:
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - TDS_URL=http://data-service:8000
+      - TDS_URL
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
       - RABBITMQ_USERNAME=rmq_user
@@ -172,7 +172,7 @@ services:
   sciml-service:
     image: ghcr.io/darpa-askem/sciml-service:latest
     environment:
-      - SIMSERVICE_TDS_URL=http://data-service:8000
+      - SIMSERVICE_TDS_URL
       - ENABLE_REMOTE_DATA_HANDLING=false
     ports:
       - 8080
@@ -206,6 +206,8 @@ services:
       - BUCKET
       - AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY
+      - TDS_URL
+      - PROJECT_ID
     depends_on:
       pyciemss-api:
         condition: service_healthy
