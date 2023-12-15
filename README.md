@@ -12,11 +12,13 @@ and trying to use a few requests through the relevant parts of the stack.
    - [x] `read:packages`,
    - [x] `write:packages`
    - [x] and `delete:packages`.
-3. Execute `echo [YOUR_GITHUB_TOKEN] | docker login ghcr.io -u [YOUR_GITHUB_USERNAME] --password-stdin`  in the `simulation-integration` directory
-4. Update your containers by running `docker compose pull`
-5. Build your containers by `docker compose build`
-6. Run the tests with `docker compose run tests`.
-7. View the results with `docker compose run --build --service-ports dashboard` (Assuming you haven't deleted any volumes)
+1. Execute `echo [YOUR_GITHUB_TOKEN] | docker login ghcr.io -u [YOUR_GITHUB_USERNAME] --password-stdin`  in the `simulation-integration` directory
+1. Update your containers by running `docker compose pull`
+1. Create `.env` by running `cp env.sample .env` 
+1. Build your containers by `docker compose build`
+1. Run the tests with `docker compose run tests`.
+1. View the results with `docker compose run --build --service-ports dashboard` (Assuming you haven't deleted any volumes)
+1. To clean up the test runner after use, run `docker compose down`
 
 
 ### Usage Details
@@ -33,6 +35,17 @@ be sure to shut down the services by running `docker compose down` to conserve y
 
 See `env.sample` to see which environment variables are used by the test/report runner. 
 You can create a `.env` envfile based on sample if you want to override the defaults.
+
+If the report needs to be published, the envfile should have some additional vars and look like this:
+```
+UPLOAD=FALSE
+BUCKET=results-bucket
+AWS_ACCESS_KEY_ID=xyz
+AWS_SECRET_ACCESS_KEY=xyz
+PROJECT_ID=1
+TDS_URL=http://data-service.terarium.ai
+SIMSERVICE_TDS_URL=http://data-service.terarium.ai
+```
 
 ## Adding Scenarios
 To add scenarios, create a new directory in `scenarios`. For each request you would like to 
